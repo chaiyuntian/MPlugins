@@ -1,0 +1,31 @@
+{
+	"FileVersion": 3,
+	"Version": 107,
+	"VersionName": "2.07",
+	"FriendlyName": "SimpleTCPUDPSocketClient",
+	"Description": "TCP and UDP Blueprint Socket Client",
+	"Category": "Sockets",
+	"CreatedBy": "Socke",
+	"CreatedByURL": "",
+	"DocsURL": "http://virtualbird.de/ue4Doku/SimpleTCPUDPSocketClient2/",
+	"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/content/5d4ddd5493ce4d2295ef9be6c67eff82",
+	"SupportURL": "mailto:unrealmarketplace@virtualbird.de",
+	"EngineVersion": "4.25.0",
+	"CanContainContent": false,
+	"Installed": true,
+	"Modules": [
+		{
+			"Name": "SocketClient",
+			"Type": "Runtime",
+			"LoadingPhase": "PreLoadingScreen",
+			"WhitelistPlatforms": [
+				"Win64",
+				"Win32",
+				"Mac",
+				"IOS",
+				"Android",
+				"Linux"
+			]
+		}
+	]
+}

@@ -1,0 +1,49 @@
+{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "1.0",
+	"FriendlyName": "GeoGlue",
+	"Description": "",
+	"Category": "Other",
+	"CreatedBy": "",
+	"CreatedByURL": "",
+	"DocsURL": "",
+	"MarketplaceURL": "",
+	"SupportURL": "",
+	"CanContainContent": true,
+	"IsBetaVersion": false,
+	"IsExperimentalVersion": false,
+	"Installed": false,
+	"Modules":[
+		{
+			"Name": "GeoGlue",
+			"Type": "Runtime",
+			"LoadingPhase": "PreLoadingScreen"
+		},
+
+		{
+			"Name": "VoxelExtension",
+			"Type": "Runtime",
+			"LoadingPhase": "PostConfigInit",
+			"WhitelistPlatforms": [
+				"Win64",
+				"Linux",
+				"Android"
+			]
+		}
+
+	],
+
+	"Plugins": [
+		
+		{
+			"Name": "UnrealGDAL",
+			"Enabled": true
+		},
+
+		{
+			"Name": "VoxelPro",
+			"Enabled": true
+		}
+	]
+}
