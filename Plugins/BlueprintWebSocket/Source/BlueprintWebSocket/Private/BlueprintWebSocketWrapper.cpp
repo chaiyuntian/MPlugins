@@ -40,6 +40,8 @@ void UBlueprintWebSocket::Connect(const FString& Url, const FString& Protocol)
 	}
 	
 	NativeSocket->Connect();
+
+	
 }
 
 void UBlueprintWebSocket::Close(const int32 Code, const FString& Reason)
@@ -52,6 +54,18 @@ void UBlueprintWebSocket::Close(const int32 Code, const FString& Reason)
 	{
 		UE_LOG(LogBlueprintWebSocket, Warning, TEXT("Close() called but the WebSocket is not connected."));
 	}
+}
+
+
+void UBlueprintWebSocket::PreserveToRoot()
+{
+	AddToRoot();
+}
+
+
+void UBlueprintWebSocket::DeleteFromRoot()
+{
+	RemoveFromRoot();
 }
 
 void UBlueprintWebSocket::SetHeaders(const TMap<FString, FString>& InHeaders)

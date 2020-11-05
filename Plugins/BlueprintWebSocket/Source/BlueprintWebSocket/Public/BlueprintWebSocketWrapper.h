@@ -107,6 +107,15 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, BlueprintAssignable, Category = WebSocket)
 	FWebSocketMessageSentEvent OnMessageSentEvent;
 
+	/* Add the socket to root */
+	UFUNCTION(BlueprintCallable, Category = WebSocket)
+	void PreserveToRoot();
+
+	/* Add the socket to root */
+	UFUNCTION(BlueprintCallable, Category = WebSocket)
+	void DeleteFromRoot();
+
+
 private:
 	UFUNCTION() 
 	void OnConnected();
