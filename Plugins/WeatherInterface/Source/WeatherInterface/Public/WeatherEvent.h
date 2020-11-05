@@ -1,0 +1,90 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "WeatherEvent.generated.h"
+
+
+UENUM(BlueprintType)
+enum class EWEATHER_PHENOMENOM : uint8
+{
+	SUNNY = 0,
+	CLOUDY,
+	OVERCAST,
+	SHOWER,
+	THUNDERSHOWER,
+	THUNDERSHOWER_WITH_HAIL,
+	SLEET,
+	LIGHT_RAIN,
+	MODERATE_RAIN,
+	HEAVY_RAIN,
+	STORM,
+	HEAVY_STORM,
+	SEVERE_STORM,
+	SNOW_FLURRY,
+	LIGHT_SNOW,
+	MODERATE_SNOW,
+	HEAVY_SNOW,
+	SNOWSTORM,
+	FOGGY,
+	ICE_RAIN,
+	DUSTSTORM,
+	LIGHT_TO_MODERATE_RAIN,
+	MODERATE_TO_HEAVY_RAIN,
+	HEAVY_RAIN_TO_STORM,
+	STORM_TO_HEAVY_STORM,
+	HEAVY_TO_SEVERE_STORM,
+	LIGHT_TO_MODERATE_SNOW,
+	MODERATE_TO_HEAVY_SNOW,
+	HEAVY_SNOW_TO_SNOWSTORM,
+	DUST,
+	SAND,
+	SANDSTORM,
+	HAZE,
+	UNKNOWN,
+	DENSE_FOG,
+	STRONG_FOG,
+	MODERATE_HAZE,
+	HEAVY_HAZE, // not coresponding to table
+	SEVERE_HAZE,
+	HEAVY_FOG,
+	EXTRA_HEAVY_FOG,
+	RAIN,
+	SNOW
+};
+
+UENUM(BlueprintType)
+enum class EWIND_FORCE_LEVEL : uint8
+{
+	LEVEL_0_2, // < 5.4m / s
+	LEVEL_3_4, // 5.5~7.9m / s
+	LEVEL_4_5, // 8.0~10.7m / s
+	LEVEL_5_6, // 10.8~13.8m / s
+	LEVEL_6_7, // 13.9~17.1m / s
+	LEVEL_7_8, // 17.2~20.7m / s
+	LEVEL_8_9, // 20.8~24.4m / s
+	LEVEL_9_10, // 24.5~28.4m / s
+	LEVEL_10_11, // 28.5~32.6m / s
+	LEVEL_11_12, // 32.7~36.9m / s
+};
+
+
+UENUM(BlueprintType)
+enum class EWIND_DIRECTION : uint8
+{
+	NO_WIND = 0,
+	NORTH_EAST,
+	EAST,
+	SOUTH_EAST,
+	SOUTH,
+	SOUTHWEST,
+	WEST,
+	NORTHWEST,
+	NORTH,
+	WHIRL_WIND
+};
+
+
+
+
