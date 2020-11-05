@@ -500,8 +500,91 @@ FVoxelSpawnerTransforms UVoxelHierarchicalInstancedStaticMeshComponent::Voxel_Re
 		Voxel_SetInstancesScaleToZero(BuiltIndicesToClear);
 		Voxel_RemoveInstancesFromSections(BuiltIndicesToClear);
 		Voxel_RefreshPhysics(BoundsToUpdate.GetBox());
+		
 	}
 	
+	return OutTransforms;
+}
+
+FVoxelSpawnerTransforms UVoxelHierarchicalInstancedStaticMeshComponent::Voxel_RemoveInstancesInSphere(const FVector Center, const float Radius, const FVoxelIntBox& VoxelBounds, const FVoxelConstDataAccelerator* Accelerator, EVoxelSpawnerActorSpawnType SpawnType, FVoxelIntBox& OutBoundsToUpdate, bool bUpdatePhysicsImmediately)
+{
+	VOXEL_FUNCTION_COUNTER();
+
+	/*
+	* optimized out
+	// Prepare to adapt to voxel
+	const FVoxelVector VoxelCenter = FVoxelVector(Center);
+	
+	// const float RR = Radius * Radius;
+	*/
+
+	FVoxelSpawnerTransforms OutTransforms;
+	OutTransforms.TransformsOffset = Voxel_VoxelPosition;
+
+	check(SpawnType == EVoxelSpawnerActorSpawnType::All || Accelerator);
+
+	TArray<int32> BuiltIndicesToClear;
+	FVoxelIntBoxWithValidity BoundsToUpdate;
+
+	const auto Lambda = [&](const int32 BuiltIndex)
+	{
+		if (Voxel_Mappings.GetUnbuiltIndex(BuiltIndex) == -1)
+		{
+			// Deleted
+			return;
+		}
+
+		INC_DWORD_STAT_BY(STAT_VoxelHISMComponent_NumFloatingMeshChecked, 1);
+
+		const FVoxelSpawnerMatrix Matrix = Voxel_BuiltMatrices[BuiltIndex];
+		const FTransform LocalInstanceTransform = FTransform(Matrix.GetCleanMatrix());
+
+		if (LocalInstanceTransform.GetScale3D().IsNearlyZero())
+		{
+			return;
+		}
+
+		const FVoxelVector GlobalVoxelPosition = Voxel_GetGlobalVoxelPosition(Matrix);
+
+		/*
+		* 
+		* optimized out
+		const FVoxelVector V = (VoxelCenter - GlobalVoxelPosition);
+		const float DD = V | V;
+		UE_LOG(LogTemp, Warning, TEXT("DD: %f, RR: %f "), DD, RR);
+		*/
+
+		if (!VoxelBounds.Contains(FVoxelIntBox(GlobalVoxelPosition)) /*|| DD> RR*/)
+		{
+			return;
+		}
+
+		if (SpawnType == EVoxelSpawnerActorSpawnType::All || Accelerator->GetFloatValue(GlobalVoxelPosition.X, GlobalVoxelPosition.Y, GlobalVoxelPosition.Z, 0) > 0)
+		{
+			OutTransforms.Matrices.Add(Matrix);
+			BuiltIndicesToClear.Add(BuiltIndex);
+			BoundsToUpdate += FVoxelIntBox(GlobalVoxelPosition);
+		}
+	};
+	
+	if (!ensure(ClusterTreePtr.IsValid())) return {};
+	
+
+	Voxel_IterateInstancesInBounds(*ClusterTreePtr, Voxel_VoxelBoundsToLocal(VoxelBounds), Lambda);
+
+	if (BuiltIndicesToClear.Num() > 0)
+	{
+		Voxel_SetInstancesScaleToZero(BuiltIndicesToClear);
+		Voxel_RemoveInstancesFromSections(BuiltIndicesToClear);
+		// for optimization purpose
+		if (bUpdatePhysicsImmediately)
+		{
+			Voxel_RefreshPhysics(BoundsToUpdate.GetBox());
+		}
+	}
+
+	OutBoundsToUpdate = BoundsToUpdate.IsValid()? BoundsToUpdate.GetBox():FVoxelIntBox();
+
 	return OutTransforms;
 }
 

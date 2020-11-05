@@ -446,6 +446,62 @@ AVoxelSpawnerActor* UVoxelBlueprintLibrary::SpawnVoxelSpawnerActorByInstanceInde
 	return World->GetInstancedMeshManager().SpawnActorByIndex(Component, InstanceIndex);
 }
 
+bool UVoxelBlueprintLibrary::RemoveByInstanceIndex(AVoxelWorld* World, UVoxelHierarchicalInstancedStaticMeshComponent* Component, int32 InstanceIndex)
+{
+	VOXEL_FUNCTION_COUNTER();
+	CHECK_VOXELWORLD_IS_CREATED();
+
+	if (!Component)
+	{
+		FVoxelMessages::Error(FUNCTION_ERROR("Invalid Component"));
+		return nullptr;
+	}
+	if (Component->GetOwner() != World)
+	{
+		FVoxelMessages::Error(FUNCTION_ERROR("Component is not a component of World"));
+		return nullptr;
+	}
+
+	return World->GetInstancedMeshManager().RemoveInstanceByIndex(Component, InstanceIndex);
+}
+
+void UVoxelBlueprintLibrary::RemoveInstancesInArea(AVoxelWorld* World, FVoxelIntBox Bounds, EVoxelSpawnerActorSpawnType SpawnType /*= EVoxelSpawnerActorSpawnType::OnlyFloating*/)
+{
+	VOXEL_FUNCTION_COUNTER();
+	CHECK_VOXELWORLD_IS_CREATED_VOID();
+	CHECK_BOUNDS_ARE_VALID_VOID();
+
+	World->GetInstancedMeshManager().RemoveInstancesInArea(Bounds, World->GetData(), SpawnType);
+}
+
+void UVoxelBlueprintLibrary::RemoveInstancesInSphere(AVoxelWorld* World, FVector SphereCenter, float SphereRadius, FVoxelIntBox& OutBoundsNeedPhysicsUpdate, bool UpdatePhysicsImmediately, EVoxelSpawnerActorSpawnType SpawnType /*= EVoxelSpawnerActorSpawnType::OnlyFloating*/)
+{
+	VOXEL_FUNCTION_COUNTER();
+	CHECK_VOXELWORLD_IS_CREATED_VOID();
+
+	FVoxelIntBoxWithValidity BoundsWithValidity;
+	
+	BoundsWithValidity += World->GlobalToLocal(SphereCenter - FVector(SphereRadius, SphereRadius, SphereRadius));
+	BoundsWithValidity += World->GlobalToLocal(SphereCenter + FVector(SphereRadius, SphereRadius, SphereRadius));
+	
+	const FVoxelIntBox Bounds = BoundsWithValidity.GetBox();
+	
+	CHECK_BOUNDS_ARE_VALID_VOID();
+
+	if (SphereRadius <= 0)return;
+
+	World->GetInstancedMeshManager().RemoveInstancesInSphere(SphereCenter, SphereRadius,Bounds, World->GetData(), SpawnType, OutBoundsNeedPhysicsUpdate, UpdatePhysicsImmediately);
+}
+
+void UVoxelBlueprintLibrary::UpdatePhysicsInBoundsManually(AVoxelWorld* World, FVoxelIntBox Bounds)
+{
+	VOXEL_FUNCTION_COUNTER();
+	CHECK_VOXELWORLD_IS_CREATED_VOID();
+	CHECK_BOUNDS_ARE_VALID_VOID();
+	World->GetInstancedMeshManager().UpdatePhysicsInBoundsManually(Bounds, World->GetData());
+}
+
+
 void UVoxelBlueprintLibrary::AddInstances(
 	AVoxelWorld* const World, 
 	UStaticMesh* const Mesh,

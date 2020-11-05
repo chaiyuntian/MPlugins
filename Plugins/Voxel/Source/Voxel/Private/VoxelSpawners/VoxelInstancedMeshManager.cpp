@@ -277,6 +277,77 @@ TMap<FVoxelInstancedMeshAndActorSettings, TArray<FVoxelSpawnerTransforms>> FVoxe
 	return TransformsMap;
 }
 
+
+TMap<FVoxelInstancedMeshAndActorSettings, TArray<FVoxelSpawnerTransforms>> FVoxelInstancedMeshManager::RemoveInstancesInSphere(
+	const FVector SphereCenter, const float SphereRadius, const FVoxelIntBox Bounds,
+	const FVoxelData& Data,
+	EVoxelSpawnerActorSpawnType SpawnType, FVoxelIntBox& OutBoundsNeedPhysicsUpdate,bool UpdatePhysicsImmediately /* = false*/) const
+{
+	VOXEL_FUNCTION_COUNTER();
+
+	//const FVoxelIntBox Bounds = FVoxelIntBox(SphereCenter - FVector(SphereRadius, SphereRadius, SphereRadius), SphereCenter + FVector(SphereRadius, SphereRadius, SphereRadius));
+
+	const auto ExtendedBounds = Bounds.Extend(1); // As we are accessing floats, they can be between Max - 1 and Max
+
+	TMap<FVoxelInstancedMeshAndActorSettings, TArray<FVoxelSpawnerTransforms>> TransformsMap;
+
+	FVoxelReadScopeLock Lock(Data, ExtendedBounds, "SpawnActorsInSphere");
+
+	const TUniquePtr<FVoxelConstDataAccelerator> Accelerator =
+		SpawnType == EVoxelSpawnerActorSpawnType::All
+		? nullptr
+		: MakeUnique<FVoxelConstDataAccelerator>(Data, ExtendedBounds);
+
+	for (auto& MeshSettingsIt : MeshSettingsToChunks)
+	{
+		TArray<FVoxelSpawnerTransforms>& TransformsArray = TransformsMap.FindOrAdd(MeshSettingsIt.Key);
+		for (auto& ChunkIt : MeshSettingsIt.Value.Chunks)
+		{
+			const FHISMChunk& Chunk = ChunkIt.Value;
+			if (Chunk.HISM.IsValid() && Chunk.Bounds.IsValid() && Chunk.Bounds.GetBox().Intersect(Bounds))
+			{
+				FVoxelIntBox HISMBounds;
+				auto Transforms = Chunk.HISM->Voxel_RemoveInstancesInSphere(SphereCenter, SphereRadius,Bounds, Accelerator.Get(), SpawnType, HISMBounds, UpdatePhysicsImmediately);
+				
+				// Union the HISMBounds
+				OutBoundsNeedPhysicsUpdate = OutBoundsNeedPhysicsUpdate.Union(HISMBounds) ;
+
+				TransformsArray.Emplace(MoveTemp(Transforms));
+			}
+		}
+	}
+
+	return TransformsMap;
+}
+
+
+void FVoxelInstancedMeshManager::UpdatePhysicsInBoundsManually(const FVoxelIntBox BoundsNeedPhysicsUpdate, const FVoxelData& Data)
+{
+	VOXEL_FUNCTION_COUNTER();
+
+	//const FVoxelIntBox Bounds = FVoxelIntBox(SphereCenter - FVector(SphereRadius, SphereRadius, SphereRadius), SphereCenter + FVector(SphereRadius, SphereRadius, SphereRadius));
+
+	const auto ExtendedBounds = BoundsNeedPhysicsUpdate.Extend(1); // As we are accessing floats, they can be between Max - 1 and Max
+
+	TMap<FVoxelInstancedMeshAndActorSettings, TArray<FVoxelSpawnerTransforms>> TransformsMap;
+
+	FVoxelReadScopeLock Lock(Data, ExtendedBounds, "UpdatePhysicsInBoundsManually");
+
+	for (auto& MeshSettingsIt : MeshSettingsToChunks)
+	{
+		TArray<FVoxelSpawnerTransforms>& TransformsArray = TransformsMap.FindOrAdd(MeshSettingsIt.Key);
+		for (auto& ChunkIt : MeshSettingsIt.Value.Chunks)
+		{
+			const FHISMChunk& Chunk = ChunkIt.Value;
+			if (Chunk.HISM.IsValid() && Chunk.Bounds.IsValid() && Chunk.Bounds.GetBox().Intersect(BoundsNeedPhysicsUpdate))
+			{
+				Chunk.HISM->Voxel_RefreshPhysics(BoundsNeedPhysicsUpdate);
+			}
+		}
+	}
+
+}
+
 AVoxelSpawnerActor* FVoxelInstancedMeshManager::SpawnActorByIndex(UVoxelHierarchicalInstancedStaticMeshComponent* Component, int32 InstanceIndex)
 {
 	VOXEL_FUNCTION_COUNTER();
@@ -301,6 +372,24 @@ AVoxelSpawnerActor* FVoxelInstancedMeshManager::SpawnActorByIndex(UVoxelHierarch
 	ensure(Component->Voxel_GetMeshAndActorSettings().Mesh == Component->GetStaticMesh());
 
 	return SpawnActor(Component->Voxel_GetMeshAndActorSettings(), Transform);
+}
+
+bool FVoxelInstancedMeshManager::RemoveInstanceByIndex(UVoxelHierarchicalInstancedStaticMeshComponent* Component, int32 InstanceIndex)
+{
+	if (!ensure(Component))
+	{
+		return nullptr;
+	}
+
+	// Not one of ours
+	if (!ensure(HISMs.Contains(Component)))
+	{
+		return nullptr;
+	}
+
+	FVoxelSpawnerTransform Transform;
+	
+	return Component->Voxel_RemoveInstanceByIndex(InstanceIndex, Transform);
 }
 
 void FVoxelInstancedMeshManager::RecomputeMeshPositions()

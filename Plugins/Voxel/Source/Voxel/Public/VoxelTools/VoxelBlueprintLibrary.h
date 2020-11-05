@@ -163,6 +163,38 @@ public:
 		UVoxelHierarchicalInstancedStaticMeshComponent* Component,
 		int32 InstanceIndex);
 
+
+	UFUNCTION(BlueprintCallable, Category = "Voxel|Spawners", meta = (DefaultToSelf = "World"))
+		static bool RemoveByInstanceIndex(
+			AVoxelWorld* World,
+			UVoxelHierarchicalInstancedStaticMeshComponent* Component,
+			int32 InstanceIndex);
+
+	// Will remove instanced static mesh instances by actors
+	UFUNCTION(BlueprintCallable, Category = "Voxel|Spawners", meta = (DefaultToSelf = "World"))
+		static void RemoveInstancesInArea(
+			AVoxelWorld* World,
+			FVoxelIntBox Bounds,
+			EVoxelSpawnerActorSpawnType SpawnType = EVoxelSpawnerActorSpawnType::OnlyFloating);
+
+
+	// Will remove instanced static mesh instances by actors
+	// Physic is not updated automatically if UpdatePhysicsImmediately is checked false
+	UFUNCTION(BlueprintCallable, Category = "Voxel|Spawners", meta = (DefaultToSelf = "World"))
+		static void RemoveInstancesInSphere(
+			AVoxelWorld* World,
+			FVector SphereCenter,
+			float SphereRadius, 
+			FVoxelIntBox& OutBoundsNeedPhysicsUpdate, 
+			bool UpdatePhysicsImmediately = false,
+			EVoxelSpawnerActorSpawnType SpawnType = EVoxelSpawnerActorSpawnType::OnlyFloating);
+
+
+	// For optimization purpose
+	// Update Physics Bounds manually
+	UFUNCTION(BlueprintCallable, Category = "Voxel|Spawners", meta = (DefaultToSelf = "World"))
+		static void UpdatePhysicsInBoundsManually(AVoxelWorld* World, FVoxelIntBox BoundsNeedPhysicsUpdate);
+
 	/**
 	 * Add instances to a voxel world foliage system
 	 * @param World						The voxel world

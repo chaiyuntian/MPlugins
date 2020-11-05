@@ -95,6 +95,14 @@ public:
 		const FVoxelIntBox& VoxelBounds, 
 		const FVoxelConstDataAccelerator* Accelerator, 
 		EVoxelSpawnerActorSpawnType SpawnType);
+
+	FVoxelSpawnerTransforms Voxel_RemoveInstancesInSphere(
+		const FVector SphereCenter, const float SphereRadius,
+		const FVoxelIntBox& VoxelBounds,
+		const FVoxelConstDataAccelerator* Accelerator,
+		EVoxelSpawnerActorSpawnType SpawnType, FVoxelIntBox& OutBoundsToUpdate, bool bUpdatePhysicsImmediately = false);
+
+
 	bool Voxel_RemoveInstanceByIndex(int32 InstanceIndex, FVoxelSpawnerTransform& OutTransform);
 	
 	int32 Voxel_GetNumInstances() const

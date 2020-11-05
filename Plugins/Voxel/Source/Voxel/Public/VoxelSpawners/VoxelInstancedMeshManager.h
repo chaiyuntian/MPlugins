@@ -103,7 +103,22 @@ public:
 		const FVoxelData& Data,
 		EVoxelSpawnerActorSpawnType SpawnType) const;
 
+
+	// Begin Change for Terrain Edit
+	TMap<FVoxelInstancedMeshAndActorSettings, TArray<FVoxelSpawnerTransforms>> RemoveInstancesInSphere(
+		const FVector Center, const float Radius, const FVoxelIntBox Bounds,
+		const FVoxelData& Data,
+		EVoxelSpawnerActorSpawnType SpawnType, FVoxelIntBox& OutBoundsNeedPhysicsUpdate, bool UpdatePhysicsImmediately = false) const;
+	
+	void UpdatePhysicsInBoundsManually(const FVoxelIntBox BoundsNeedPhysicsUpdate, const FVoxelData& Data);
+	
+	
+	// End Change for Terrain Edit
+
+
 	AVoxelSpawnerActor* SpawnActorByIndex(UVoxelHierarchicalInstancedStaticMeshComponent* Component, int32 InstanceIndex);
+
+	bool RemoveInstanceByIndex(UVoxelHierarchicalInstancedStaticMeshComponent* Component, int32 InstanceIndex);
 	
 	void RecomputeMeshPositions();
 
