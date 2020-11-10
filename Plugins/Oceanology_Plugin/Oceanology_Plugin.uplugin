@@ -1,0 +1,26 @@
+{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "3.0.3",
+	"FriendlyName": "Oceanology_Plugin",
+	"Description": "oceanology",
+	"Category": "Ocean",
+	"CreatedBy": "Galidar",
+	"CreatedByURL": "",
+	"DocsURL": "",
+	"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/content/ad53b85f109c87b4a8bf580898186114",
+	"SupportURL": "https://discordapp.com/invite/fVJmuWr",
+	"EngineVersion": "4.25.0",
+	"CanContainContent": true,
+	"Installed": true,
+	"Modules": [
+		{
+			"Name": "Oceanology_Plugin",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"WhitelistPlatforms": [
+				"Win64"
+			]
+		}
+	]
+}

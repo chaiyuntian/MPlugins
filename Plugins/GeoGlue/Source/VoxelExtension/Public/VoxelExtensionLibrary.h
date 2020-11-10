@@ -22,6 +22,12 @@ public:
 	static UVoxelHeightmapAssetUINT16* CreateHeightmapObjectFromPNG(FString HeightmapPath);
 
 	UFUNCTION(BlueprintCallable, Category = "Voxel Extension")
+	static UVoxelHeightmapAssetFloat* CreateHeightmapObjectFromXML(FString XmlFilePath, FVector2D LeftTop, FVector2D RightBottom, int32 SamplesPerRow, int32 SamplesPerColumm, float VoxelSize);
+
+	UFUNCTION(BlueprintCallable, Category = "Voxel Extension")
 	static UVoxelHeightmapAssetFloat* CreateHeightmapObjectFromGRD(FString GRDFilePath, int32 ResampledWidth, int32 ResampledHeight, float HeightScale = 0.f);
+
+	UFUNCTION(BlueprintCallable, Category = "Voxel Extension")
+	static TArray<FTransform> MakeInstanceTransformsWithDensityMask(FBox Bounds, UTexture2D* MaskTexture, int32 Channel);
 
 };

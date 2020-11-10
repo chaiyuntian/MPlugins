@@ -24,7 +24,8 @@ public class VoxelExtension : ModuleRules
                 "UMG",
                 "Slate",
                 "SlateCore",
-                "Voxel"
+                "Voxel",
+                "XmlParser"
             }
         );
 
